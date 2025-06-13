@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateUserRequest;
 use App\Services\UserService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class UserController extends Controller
     /**
      * Create a new User
      */
-    public function create(Request $request)
+    public function create(CreateUserRequest $request)
     {
             $user = $this->userService->createUser($request->all());
             return response()->json($user, 201);
