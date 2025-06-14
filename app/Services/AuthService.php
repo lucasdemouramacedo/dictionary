@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Services;
+
+use DateInterval;
+use Illuminate\Support\Facades\Auth;
+use DateTimeImmutable;
+use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Encoding\JoseEncoder;
+use Lcobucci\JWT\JwtFacade;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Signer\Key\InMemory;
+use Lcobucci\JWT\Token\Parser;
+use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
+use Lcobucci\JWT\Validation\Validator;
+use Lcobucci\JWT\Validation\Constraint\SignedWith;
+use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
+use Symfony\Component\Clock\Clock;
+
+class AuthService
+{
+
+    /**
+     * Auth a User
+     */
+    public function authenticateUser(array $credentials)
+    {
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            $parsedToken = $this->issueToken();
+
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'token' => $parsedToken
+            ];
+        }
+
+        return response()->json([
+            'message' => 'Invalid email or password.',
+        ], 401);
+    }
+
+    /**
+     * Auth a User
+     */
+    public function authorizeUser($token)
+    {
+        return $this->valideToken($token);
+    }
+
+    private function issueToken()
+    {
+        $key = InMemory::base64Encoded(env('JWT_SECRET'));
+
+        $parsedToken = (new JwtFacade())->issue(
+            new Sha256(),
+            $key,
+            static fn(
+                Builder $builder,
+                DateTimeImmutable $issuedAt
+            ): Builder => $builder
+                ->expiresAt($issuedAt->modify('+1 minutes'))
+        );
+
+        return $parsedToken->toString();
+    }
+
+    private function valideToken($token)
+    {
+        try {
+            $parser = new Parser(new JoseEncoder());
+            $parsedToken = $parser->parse($token);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        $validator = new Validator();
+
+        $clock = new Clock();
+        $constraints = [
+            new SignedWith(new Sha256(), InMemory::base64Encoded(env('JWT_SECRET'))),
+            new LooseValidAt($clock, DateInterval::createFromDateString('1 minutes'))
+        ];
+
+        try {
+            $validator->assert($parsedToken, ...$constraints);
+            $claims = $parsedToken->claims()->all();
+            return true;
+        } catch (RequiredConstraintsViolated $e) {
+            return false;
+        }
+    }
+}
