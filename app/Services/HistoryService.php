@@ -8,13 +8,19 @@ use Illuminate\Support\Facades\DB;
 
 class HistoryService
 {
+    public function __construct(
+        protected WordService $wordService
+    ){}
+
     /**
      * Create a new history
      */
     public function create(array $data): History
     {
+        $word = $this->wordService->findWord($data["word"]);
         return History::create([
-            "name" => $data["name"]
+             "user_id" => Auth::user()->id,
+             "word_id" => $word->id
         ]);
     }
 
