@@ -25,4 +25,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
         });
+
+        $exceptions->renderable(function (Exception $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], Response::HTTP_BAD_REQUEST);
+            }
+        });
     })->create();

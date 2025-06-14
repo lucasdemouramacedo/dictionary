@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use DateInterval;
 use Illuminate\Support\Facades\Auth;
 use DateTimeImmutable;
@@ -28,7 +29,7 @@ class AuthService
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
-            $parsedToken = $this->issueToken();
+            $parsedToken = $this->issueToken($user->id);
 
             return [
                 'id' => $user->id,
@@ -50,7 +51,7 @@ class AuthService
         return $this->valideToken($token);
     }
 
-    private function issueToken()
+    private function issueToken($userId)
     {
         $key = InMemory::base64Encoded(env('JWT_SECRET'));
 
@@ -61,7 +62,8 @@ class AuthService
                 Builder $builder,
                 DateTimeImmutable $issuedAt
             ): Builder => $builder
-                ->expiresAt($issuedAt->modify('+1 minutes'))
+                ->expiresAt($issuedAt->modify('+1 months'))
+                ->relatedTo((string) $userId)
         );
 
         return $parsedToken->toString();
@@ -81,12 +83,17 @@ class AuthService
         $clock = new Clock();
         $constraints = [
             new SignedWith(new Sha256(), InMemory::base64Encoded(env('JWT_SECRET'))),
-            new LooseValidAt($clock, DateInterval::createFromDateString('1 minutes'))
+            new LooseValidAt($clock, DateInterval::createFromDateString('1 months'))
         ];
 
         try {
             $validator->assert($parsedToken, ...$constraints);
             $claims = $parsedToken->claims()->all();
+            
+            $userId = $parsedToken->claims()->get('sub');
+            $user = User::find($userId);
+            Auth::setUser($user);
+
             return true;
         } catch (RequiredConstraintsViolated $e) {
             return false;

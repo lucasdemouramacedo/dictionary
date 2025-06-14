@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WordController;
+use App\Http\Middleware\AuthMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -11,5 +12,5 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::prefix('entries')->group(function () {
-    Route::get('/en', [WordController::class, 'list']);
+    Route::get('/en', [WordController::class, 'list'])->middleware(AuthMiddleware::class);
 });
