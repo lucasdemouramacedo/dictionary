@@ -12,7 +12,7 @@ class AuthMiddleware
 {
     public function __construct(
         protected AuthService $authService
-    ){}
+    ) {}
 
     /**
      * Handle an incoming request.
@@ -21,9 +21,14 @@ class AuthMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $authorize = $this->authService->authorizeUser($request->bearerToken());
 
-        if(!$authorize) {
+        $token = $request->bearerToken();
+        if (!$token) {
+            throw new \Exception("Token not provided", 400);
+        }
+
+        $authorize = $this->authService->authorizeUser($token);
+        if (!$authorize) {
             throw new \Exception("Invalid token", 400);
         }
 
