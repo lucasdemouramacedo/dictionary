@@ -17,5 +17,7 @@ class Word extends Model
      */
     protected $fillable = [
         'word',
+        'updated_at',
+        'created_at'
     ];
 }
