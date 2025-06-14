@@ -1,7 +1,15 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\WordController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/auth/signup', [UserController::class, 'create']);
+Route::prefix('auth')->group(function () {
+    Route::post('/signup', [UserController::class, 'create']);
+    Route::post('/signin', [AuthController::class, 'login']);
+});
+
+Route::prefix('entries')->group(function () {
+    Route::get('/en', [WordController::class, 'list']);
+});

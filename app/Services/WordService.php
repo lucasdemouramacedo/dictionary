@@ -19,30 +19,44 @@ class WordService
     }
 
     /**
+     * Find a word
+     */
+    public function findWord($word): Word
+    {
+        return Word::where("word", $word)->firstOrFail();
+    }
+
+    /**
      * List Words
      */
-    public function listWords(array $data): JsonResponse
+    public function findWords(array $data): array
     {
-        $limit = (int) $data['limit'] ?? 10;
-        $page = (int) $data['page'] ?? 1;
+        $limit = (int) ($data['limit'] ?? 10);
+        $page = (int) ($data['page'] ?? 1);
         $offset = ($page - 1) * $limit;
+        $search = ($data['search'] ?? null);
 
-        $total  = DB::table('words')->count();
+        $query = DB::table('words')->orderBy('word');
 
-        $results = DB::table('words')
-            ->orderBy('word')
+        if ($search) {
+            $query->where('word', 'like', $search . '%');
+        }
+
+        $total = $query->count();
+
+        $results = $query
             ->offset($offset)
             ->limit($limit)
             ->pluck('word');
 
-        return response()->json([
+        return [
             'results' => $results,
             'totalDocs' => $total,
-            'previous' => $page > 1 ? $page - 1 : null,
-            'next' => ($offset + $limit) < $total ? $page + 1 : null,
+            'page' => $page,
+            'totalPages' => (int) ceil($total / $limit),
             'hasNext' => ($offset + $limit) < $total,
             'hasPrev' => $page > 1,
-        ]);
+        ];
     }
 
     /**
