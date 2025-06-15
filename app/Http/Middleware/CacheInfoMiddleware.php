@@ -28,7 +28,10 @@ class CacheInfoMiddleware
         $response->headers->set('X-Cache', $isFromCache ? 'HIT' : 'MISS');
         $response->headers->set('X-Response-Time', "{$durationMs}ms");
 
-        unset($data['from_cache']);
+        if (is_array($data) && array_key_exists('from_cache', $data)) {
+            unset($data['from_cache']);
+        } 
+        
         $response->setData($data);
 
         return $response;
