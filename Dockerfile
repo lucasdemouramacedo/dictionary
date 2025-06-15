@@ -5,6 +5,9 @@ RUN apt-get update && apt-get install -y \
     zip unzip curl git libzip-dev libpng-dev libonig-dev libxml2-dev \
     && docker-php-ext-install pdo_mysql mbstring zip exif pcntl
 
+# Instala phpredis
+RUN pecl install redis && docker-php-ext-enable redis
+
 # Instala Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -22,7 +25,6 @@ RUN php artisan key:generate || true
 
 RUN chmod -R 775 storage bootstrap/cache
 RUN chown -R www-data:www-data storage bootstrap/cache
-
 
 # Expõe a porta do servidor Laravel
 EXPOSE 8000

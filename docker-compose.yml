@@ -32,6 +32,15 @@ services:
       - db_data:/var/lib/mysql
     networks:
       - dictionary
+  redis:
+    image: redis:latest
+    container_name: redis-server
+    command: redis-server --requirepass redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - dictionary
 
 networks:
   dictionary:
