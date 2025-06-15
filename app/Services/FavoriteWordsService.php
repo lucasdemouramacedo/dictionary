@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Exceptions\FavoriteWordCreationException;
+use App\Exceptions\WordAlreadyFavoritedException;
 use App\Models\FavoriteWord;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class FavoriteWordsService
 {
@@ -17,10 +19,12 @@ class FavoriteWordsService
      */
     public function findByWord(string $word): ?FavoriteWord
     {
-        $word = $this->wordService->findWord($word);
-        return FavoriteWord::where('word_id', $word->id)
+        $wordFound = $this->wordService->findWord($word);
+        $favorite = FavoriteWord::where('word_id', $wordFound->id)
             ->where('user_id', Auth::id())
             ->first();
+        
+        return $favorite;
     }
 
     /**
@@ -28,16 +32,21 @@ class FavoriteWordsService
      */
     public function favoriteWord($word)
     {
-        $word = $this->wordService->findWord($word);
+        $favorite = $this->findByWord($word);
 
-        $existing = FavoriteWord::where('user_id', Auth::id())
-            ->where('word_id', $word->id)
-            ->first();
+        if($favorite) {
+            throw new WordAlreadyFavoritedException();
+        }
 
-        return FavoriteWord::create([
-            'user_id' => Auth::id(),
-            'word_id' => $word->id,
-        ]);
+        try {
+            $wordFound = $this->wordService->findWord($word);
+            return FavoriteWord::create([
+                'user_id' => Auth::id(),
+                'word_id' =>  $wordFound->id,
+            ]);
+        } catch (QueryException $e) {
+            throw new FavoriteWordCreationException();
+        }
     }
 
     /**
