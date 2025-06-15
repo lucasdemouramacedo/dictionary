@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\InvalidLoginInfoException;
 use App\Models\User;
 use DateInterval;
 use Illuminate\Support\Facades\Auth;
@@ -41,9 +42,7 @@ class AuthService
             ];
         }
 
-        return response()->json([
-            'message' => 'Invalid email or password.',
-        ], 401);
+        throw new InvalidLoginInfoException();
     }
 
     /**
