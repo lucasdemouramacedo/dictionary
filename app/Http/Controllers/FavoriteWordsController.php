@@ -29,4 +29,13 @@ class FavoriteWordsController extends Controller
         $word = $this->favoriteService->unfavoriteWord($word);
         return response()->noContent();
     }
+    
+    /**
+     * List favorite words
+     */
+    public function list(Request $request)
+    {
+        $result = $this->favoriteService->findFavoriteWords($request->all());
+        return  response()->json($result, 200);
+    }
 }
