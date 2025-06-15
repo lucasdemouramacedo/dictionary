@@ -21,6 +21,9 @@ use Symfony\Component\Clock\Clock;
 class AuthService
 {
 
+    public function __construct(
+        protected UserService $userService
+    ) {}
     /**
      * Auth a User
      */
@@ -91,7 +94,7 @@ class AuthService
             $claims = $parsedToken->claims()->all();
             
             $userId = $parsedToken->claims()->get('sub');
-            $user = User::find($userId);
+            $user = $this->userService->readUser($userId);
             Auth::setUser($user);
 
             return true;
