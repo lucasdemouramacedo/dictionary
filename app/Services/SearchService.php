@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Exceptions\SearchException;
 use App\Services\Integration\FreeDictionary\FreeDictionaryService;
+use Exception;
 use Illuminate\Support\Facades\Redis;
 
 class SearchService
@@ -16,18 +18,23 @@ class SearchService
      */
     public function getDefinition(string $word): array
     {
-        $cacheKey = "free:dictionary:definition:{$word}";
-        $cached = Redis::get($cacheKey);
+        try {
 
-        if ($cached) {
-            $definition = json_decode($cached, true);
-            return [...$definition, 'from_cache' => true];
+            $cacheKey = "free:dictionary:definition:{$word}";
+            $cached = Redis::get($cacheKey);
+
+            if ($cached) {
+                $definition = json_decode($cached, true);
+                return [...$definition, 'from_cache' => true];
+            }
+
+            $definition = $this->freeDictionaryService->getDefinition($word);
+
+            Redis::setex($cacheKey, 3600, json_encode($definition));
+            
+            return [...$definition, 'from_cache' => false];
+        } catch (Exception $e) {
+            throw new SearchException("word");
         }
-
-        $definition = $this->freeDictionaryService->getDefinition($word);
-
-        Redis::setex($cacheKey, 3600, json_encode($definition));
-
-        return [...$definition, 'from_cache' => false];
     }
 }
