@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\InvalidTokenException;
+use App\Exceptions\TokenNotProvidedException;
 use App\Services\AuthService;
 use Closure;
 use Illuminate\Http\Request;
@@ -23,13 +25,14 @@ class AuthMiddleware
     {
 
         $token = $request->bearerToken();
+
         if (!$token) {
-            throw new \Exception("Token not provided", 400);
+            throw new TokenNotProvidedException();
         }
 
         $authorize = $this->authService->authorizeUser($token);
         if (!$authorize) {
-            throw new \Exception("Invalid token", 400);
+            throw new InvalidTokenException();
         }
 
         return $next($request);
