@@ -18,7 +18,7 @@ class FavoriteWordsController extends Controller
     public function create($word)
     {
         $word = $this->favoriteService->favoriteWord($word);
-        return response()->json(null, 200);
+        return response()->noContent();
     }
 
     /**
@@ -27,6 +27,6 @@ class FavoriteWordsController extends Controller
     public function delete($word)
     {
         $word = $this->favoriteService->unfavoriteWord($word);
-        return response()->json(null, 200);
+        return response()->noContent();
     }
 }
