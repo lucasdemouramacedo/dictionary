@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Exceptions\FavoriteWordCreationException;
+use App\Exceptions\SearchException;
 use App\Exceptions\WordAlreadyFavoritedException;
 use App\Models\FavoriteWord;
+use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -73,27 +75,32 @@ class FavoriteWordsService
         $page = (int) ($data['page'] ?? 1);
         $offset = ($page - 1) * $limit;
 
-        $query = DB::table('favorite_words')
-            ->join('words', 'favorite_words.word_id', '=', 'words.id')
-            ->where('user_id', '=', Auth::user()->id)
-            ->whereNull('deleted_at')
-            ->orderBy('favorite_words.created_at')
-            ->select('words.word as word', 'favorite_words.created_at as added');
+        try {
+            $query = DB::table('favorite_words')
+                ->join('words', 'favorite_words.word_id', '=', 'words.id')
+                ->where('user_id', '=', Auth::user()->id)
+                ->whereNull('deleted_at')
+                ->orderBy('favorite_words.created_at')
+                ->select('words.word as word', 'favorite_words.created_at as added');
 
-        $total = $query->count();
+            $total = $query->count();
 
-        $results = $query
-            ->offset($offset)
-            ->limit($limit)
-            ->get();
-
-        return [
-            'results' => $results,
-            'totalDocs' => $total,
-            'page' => $page,
-            'totalPages' => (int) ceil($total / $limit),
-            'hasNext' => ($offset + $limit) < $total,
-            'hasPrev' => $page > 1,
-        ];
+            $results = $query
+                ->offset($offset)
+                ->limit($limit)
+                ->get();
+                
+            return [
+                'results' => $results,
+                'totalDocs' => $total,
+                'page' => $page,
+                'totalPages' => (int) ceil($total / $limit),
+                'hasNext' => ($offset + $limit) < $total,
+                'hasPrev' => $page > 1,
+            ];
+            
+        } catch (Exception $e) {
+            throw new SearchException('favorite words');
+        }
     }
 }
