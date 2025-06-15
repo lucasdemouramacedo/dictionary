@@ -21,13 +21,13 @@ class SearchService
 
         if ($cached) {
             $definition = json_decode($cached, true);
-            return $definition;
+            return [...$definition, 'from_cache' => true];
         }
 
         $definition = $this->freeDictionaryService->getDefinition($word);
 
         Redis::setex($cacheKey, 3600, json_encode($definition));
 
-        return $definition;
+        return [...$definition, 'from_cache' => false];
     }
 }
