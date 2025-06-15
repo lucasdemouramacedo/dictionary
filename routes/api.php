@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FavoriteWordsController;
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WordController;
 use App\Http\Middleware\AuthMiddleware;
@@ -20,6 +21,7 @@ Route::prefix('user')->group(function () {
 
 Route::prefix('entries')->group(function () {
     Route::get('/en', [WordController::class, 'list'])->middleware(AuthMiddleware::class);
+    Route::get('/en/{word}', [SearchController::class, 'search'])->middleware(AuthMiddleware::class);
     Route::post('/en/{word}/favorite', [FavoriteWordsController::class, 'create'])->middleware(AuthMiddleware::class);
     Route::delete('/en/{word}/unfavorite', [FavoriteWordsController::class, 'delete'])->middleware(AuthMiddleware::class);
 });
