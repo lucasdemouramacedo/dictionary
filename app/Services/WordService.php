@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\Exceptions\SearchException;
+use App\Exceptions\WordNotFoundException;
 use App\Models\Word;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -23,7 +26,13 @@ class WordService
      */
     public function findWord($word): Word
     {
-        return Word::where("word", $word)->firstOrFail();
+        $wordFound = Word::where("word", $word)->find();
+
+        if(!$wordFound) {
+            throw new WordNotFoundException();
+        }
+
+        return $$wordFound;
     }
 
     /**
@@ -36,27 +45,31 @@ class WordService
         $offset = ($page - 1) * $limit;
         $search = ($data['search'] ?? null);
 
-        $query = DB::table('words')->orderBy('word');
+        try {
+            $query = DB::table('words')->orderBy('word');
 
-        if ($search) {
-            $query->where('word', 'like', $search . '%');
+            if ($search) {
+                $query->where('word', 'like', $search . '%');
+            }
+
+            $total = $query->count();
+
+            $results = $query
+                ->offset($offset)
+                ->limit($limit)
+                ->pluck('word');
+
+            return [
+                'results' => $results,
+                'totalDocs' => $total,
+                'page' => $page,
+                'totalPages' => (int) ceil($total / $limit),
+                'hasNext' => ($offset + $limit) < $total,
+                'hasPrev' => $page > 1,
+            ];
+        } catch (Exception $e) {
+            throw new SearchException('words list');
         }
-
-        $total = $query->count();
-
-        $results = $query
-            ->offset($offset)
-            ->limit($limit)
-            ->pluck('word');
-
-        return [
-            'results' => $results,
-            'totalDocs' => $total,
-            'page' => $page,
-            'totalPages' => (int) ceil($total / $limit),
-            'hasNext' => ($offset + $limit) < $total,
-            'hasPrev' => $page > 1,
-        ];
     }
 
     /**
