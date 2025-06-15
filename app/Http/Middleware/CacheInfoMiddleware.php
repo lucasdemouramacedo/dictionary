@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,19 +21,18 @@ class CacheInfoMiddleware
         /** @var \Illuminate\Http\JsonResponse $response */
         $response = $next($request);
 
-        $data = $response->getData(true);
-        $isFromCache = $data['from_cache'] ?? false;
-
         $durationMs = round((microtime(true) - $start) * 1000);
-
-        $response->headers->set('X-Cache', $isFromCache ? 'HIT' : 'MISS');
         $response->headers->set('X-Response-Time', "{$durationMs}ms");
 
-        if (is_array($data) && array_key_exists('from_cache', $data)) {
+        if ($response instanceof JsonResponse) {
+            $data = $response->getData(true);
+            $isFromCache = $data['from_cache'] ?? false;
+
+            $response->headers->set('X-Cache', $isFromCache ? 'HIT' : 'MISS');
+
             unset($data['from_cache']);
-        } 
-        
-        $response->setData($data);
+            $response->setData($data);
+        }
 
         return $response;
     }
