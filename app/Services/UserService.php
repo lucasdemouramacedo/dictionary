@@ -2,21 +2,29 @@
 
 namespace App\Services;
 
+use App\Exceptions\UserCreationException;
+use App\Exceptions\UserNotFoundException;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Hash;
 
-class UserService {
-    
+class UserService
+{
+
     /**
      * Create a new User
      */
     public function createUser(array $data): User
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password'])
-        ]);
+        try {
+            return User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password'])
+            ]);
+        } catch (Exception $e) {
+            throw new UserCreationException();
+        }
     }
 
     /**
@@ -24,7 +32,12 @@ class UserService {
      */
     public function readUser(string $id): User
     {
-        return User::findOrFail($id);
-    }
+        $user = User::find($id);
 
+        if (!$user) {
+            throw new UserNotFoundException();
+        }
+
+        return $user;
+    }
 }
