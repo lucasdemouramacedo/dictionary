@@ -6,6 +6,8 @@ class DefaultController extends Controller
 {
     public function __invoke()
     {
-        return response()->json("Fullstack Challenge 🏅 - Dictionary", 200);
+        return response()->json([
+            "message" => "Fullstack Challenge 🏅 - Dictionary"
+        ], 200);
     }
 }

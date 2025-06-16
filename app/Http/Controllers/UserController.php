@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateUserRequest;
+use App\Services\AuthService;
 use App\Services\UserService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -10,7 +11,8 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     public function __construct(
-        protected UserService $userService
+        protected UserService $userService,
+        protected AuthService $authService
     ) {}
 
     /**
@@ -18,7 +20,13 @@ class UserController extends Controller
      */
     public function create(CreateUserRequest $request)
     {
-            $user = $this->userService->createUser($request->all());
-            return response()->json($user, 201);
+        $user = $this->userService->createUser($request->all());
+
+        $userAuthenticated = $this->authService->authenticateUser([
+            'email' => $user->email,
+            'password' => $request->password,
+        ]);
+
+        return response()->json($userAuthenticated, 200);
     }
 }
