@@ -17,9 +17,9 @@ class HistoryService
     /**
      * Create a new history
      */
-    public function create(array $data): History
+    public function create($word): History
     {
-        $word = $this->wordService->findWord($data["word"]);
+        $word = $this->wordService->findWord($word);
         return History::create([
             "user_id" => Auth::user()->id,
             "word_id" => $word->id

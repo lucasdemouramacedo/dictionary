@@ -26,13 +26,13 @@ class WordService
      */
     public function findWord($word): Word
     {
-        $wordFound = Word::where("word", $word)->find();
+        $wordFound = Word::firstWhere("word", $word);
 
         if(!$wordFound) {
             throw new WordNotFoundException();
         }
 
-        return $$wordFound;
+        return $wordFound;
     }
 
     /**
