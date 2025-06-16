@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateUserRequest;
 use App\Services\AuthService;
 use App\Services\UserService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -28,5 +28,15 @@ class UserController extends Controller
         ]);
 
         return response()->json($userAuthenticated, 200);
+    }
+
+    /**
+     * Create a new User
+     */
+    public function profile()
+    {
+        $user = $this->userService->readUser(Auth::user()->id);
+
+        return response()->json($user, 200);
     }
 }
