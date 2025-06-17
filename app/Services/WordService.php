@@ -68,7 +68,7 @@ class WordService
                 'hasPrev' => $page > 1,
             ];
         } catch (Exception $e) {
-            throw new SearchException('words list');
+            throw new SearchException('lista de palavras');
         }
     }
 

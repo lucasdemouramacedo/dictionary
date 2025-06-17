@@ -100,7 +100,7 @@ class FavoriteWordsService
             ];
             
         } catch (Exception $e) {
-            throw new SearchException('favorite words');
+            throw new SearchException('palavras favoritas');
         }
     }
 }

@@ -8,7 +8,7 @@ class FavoriteWordCreationException extends Exception
 {
     public function __construct()
     {
-        $message = "Error favoriting the word.";
+        $message = "Erro ao favoritar palavra.";
         parent::__construct($message);
     }
 }

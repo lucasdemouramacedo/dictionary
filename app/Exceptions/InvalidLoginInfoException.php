@@ -8,7 +8,7 @@ class InvalidLoginInfoException extends Exception
 {
     public function __construct()
     {
-        $message = "Invalid email or password.";
+        $message = "Email ou senha inválidos.";
         parent::__construct($message);
     }
 }

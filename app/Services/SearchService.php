@@ -41,7 +41,7 @@ class SearchService
 
             return [...$definition, 'from_cache' => false];
         } catch (Exception $e) {
-            throw new SearchException("word");
+            throw new SearchException("palavra");
         }
     }
 }

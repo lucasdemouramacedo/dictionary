@@ -8,7 +8,7 @@ class WordNotFoundException extends Exception
 {
     public function __construct()
     {
-        $message = "Word not found";
+        $message = "Palavra não encontrada";
         parent::__construct($message);
     }
 }

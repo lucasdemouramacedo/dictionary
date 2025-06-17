@@ -8,7 +8,7 @@ class WordAlreadyFavoritedException extends Exception
 {
     public function __construct()
     {
-        $message = "This word has already been favorited.";
+        $message = "Essa palavra já está nas favoritas.";
         parent::__construct($message);
     }
 }

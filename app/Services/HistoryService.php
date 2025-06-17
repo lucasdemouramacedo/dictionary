@@ -58,7 +58,7 @@ class HistoryService
                 'hasPrev' => $page > 1,
             ];
         } catch (Exception $e) {
-            throw new SearchException('history');
+            throw new SearchException('histórico de busca');
         }
     }
 }
