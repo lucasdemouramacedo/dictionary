@@ -2,15 +2,15 @@
 
 ## 📌 Sumário
 
-1. [Visão Geral](#visão-geral)
-2. [Tecnologias Utilizadas](#tecnologias-utilizadas)
-3. [Funcionalidades](#funcionalidades)
-4. [Arquitetura](#arquitetura)
-5. [Extras Técnicos](#extras-técnicos)
-6. [Instalação e Setup](#instalação-e-setup)
-8. [Coleção Postman](#coleção-postman)
-8. [Documentação da API (Swagger)](#documentação-da-api-swagger)
-9. [Melhorias Futuras](#melhorias-futuras)
+1. [Visão Geral](#-visao-geral)
+2. [Tecnologias Utilizadas](#-tecnologias-utilizadas)
+3. [Funcionalidades](#-funcionalidades)
+4. [Arquitetura](#-arquitetura)
+5. [Extras Técnicos](#-extras-tecnicos)
+6. [Instalação e Setup](#-instalacao-e-setup)
+7. [Coleção Postman](#-colecao-postman)
+8. [Documentação da API (Swagger)](#-documentação-da-api-swagger)
+9. [Melhorias Futuras](#-melhorias-futuras)
 
 ---
 
