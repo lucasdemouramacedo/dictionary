@@ -1,251 +1,144 @@
-# Back-end Challenge - Dictionary
+# 📄 Dictionary API
 
-### Back-End:
+## 📌 Sumário
 
-Nessa etapa você deverá construir uma API Restful com as melhores práticas de desenvolvimento.
+1. [Visão Geral](#visão-geral)
+2. [Tecnologias Utilizadas](#tecnologias-utilizadas)
+3. [Funcionalidades](#funcionalidades)
+4. [Arquitetura](#arquitetura)
+5. [Extras Técnicos](#extras-técnicos)
+6. [Instalação e Setup](#instalação-e-setup)
+8. [Coleção Postman](#coleção-postman)
+8. [Documentação da API (Swagger)](#documentação-da-api-swagger)
+9. [Melhorias Futuras](#melhorias-futuras)
 
-**Obrigatório 1** - Você deverá atender aos seguintes casos de uso:
+---
 
-- Como usuário, devo ser capaz de realizar login com usuário e senha
-- Como usuário, devo ser capaz de visualizar a lista de palavras do dicionário
-- Como usuário, devo ser capaz de guardar no histórico palavras já visualizadas
-- Como usuário, devo ser capaz de visualizar o histórico de palavras já visualizadas
-- Como usuário, deve ser capaz de guardar uma palavra como favorita
-- Como usuário, deve ser capaz de apagar uma palavra favorita
-- Internamente, a API deve fazer proxy da Words API, pois assim o front irá acessar somente a sua API
+## 📘 Visão Geral
 
-**Obrigatório 2** - Você deverá desenvolver as seguintes rotas com suas requisições e respostas:
+O sistema tem como objetivo funcionar como um dicionário digital, permitindo que o usuário pesquise significados de palavras, salve favoritas, acompanhe seu histórico de buscas e gerencie seu acesso por meio de autenticação de usuários.
 
-<details open>
-<summary>[GET] /</summary>
-<p>
-Retornar a mensagem "Fullstack Challenge 🏅 - Dictionary"
+---
+
+## 🛠 Tecnologias Utilizadas 
+
+- **Backend:** Laravel 12 (PHP 8.2)
+- **Banco de Dados:** MySQL
+- **Cache**: Redis
+- **API:** RESTful
+- **Autenticação:** JWT Token
+- **Ambiente:** Docker
+
+---
+
+## 🏧 Arquitetura
+
+- O sistema é desenvolvido utilizando a arquitetura MVC do Laravel, com a lógica de negócio centralizada em **services** , promovendo uma melhor separação de responsabilidades e facilitando a manutenção e escalabilidade da aplicação.
+
+### 📌 Visão Geral da Arquitetura
+
+Estrutura macro do sistema, com os principais módulos e sua interação.
+
+<p align="center">
+  <img src="docs/arquitetura-geral.png" alt="Arquitetura Geral" />
 </p>
 
-```json
-{
-    "message": "Fullstack Challenge 🏅 - Dictionary"
-}
-```
-</details>
-<details open>
-<summary>[POST] /auth/signup</summary>
+### 🔍 Arquitetura Detalhada
 
-```json
-{
-    "name": "User 1",
-    "email": "example@email.com",
-    "password": "test"
-}
-```
+Organização interna das camadas, incluindo Controllers, Services, Integrações e Databases.
 
-```json
-{
-    "id": "f3a10cec013ab2c1380acef",
-    "name": "User 1",
-    "token": "Bearer JWT.Token"
-}
-```
-</details>
-<details open>
-<summary>[POST] /auth/signin</summary>
-
-```json
-{
-    "email": "example@email.com",
-    "password": "test"
-}
-```
-
-```json
-{
-    "id": "f3a10cec013ab2c1380acef",
-    "name": "User 1",
-    "token": "Bearer JWT.Token"
-}
-```
-</details>
-<details open>
-<summary>[GET] /entries/en</summary>
-<p>
-Retornar a lista de palavras do dicionário, com paginação e suporte a busca. O endpoint de paginação de uma busca hipotética deve retornar a seguinte estrutura:
-<br/>
-[GET]/entries/en?search=fire&limit=4
+<p align="center">
+  <img src="docs/arquitetura-detalhada.png" alt="Arquitetura Detalhada" />
 </p>
 
-```json
-{
-    "results": [
-        "fire",
-        "firefly",
-        "fireplace",
-        "fireman"
-    ],
-    "totalDocs": 20,
-    "page": 1,
-    "totalPages": 5, 
-    "hasNext": true,
-    "hasPrev": false
-}
-```
-</details>
-<details open>
-<summary>[GET] /entries/en/:word</summary>
-<p>
-Retornar as informações da palavra especificada e registra o histórico de acesso.
-</p>
-</details>
-<details open>
-<summary>[POST] /entries/en/:word/favorite</summary>
-<p>
-Salva a palavra na lista de favoritas (retorno de dados no body é opcional)
-</p> 
-</details>
-<details open>
-<summary>[DELETE] /entries/en/:word/unfavorite</summary>
-<p>
-Remover a palavra da lista de favoritas (retorno de dados no body é opcional)
-</p>
-</details> 
-<details open>
-<summary>[GET] /user/me</summary>
-<p>
-Retornar o perfil do usúario
-</p>
-</details> 
-<details open>
-<summary>[GET] /user/me/history</summary>
-<p>
-Retornar a lista de palavras visitadas
+### 🗄️ Diagrama do Banco de Dados
+
+Modelo do banco de dados e suas relações.
+
+<p align="center">
+  <img src="docs/modelo-banco.png" alt="Modelo do Banco" />
 </p>
 
-```json
-{
-    "results": [
-        {
-            "word": "fire",
-            "added": "2022-05-05T19:28:13.531Z"
-        },
-        {
-            "word": "firefly",
-            "added": "2022-05-05T19:28:44.021Z"
-        },
-        {
-            "word": "fireplace",
-            "added": "2022-05-05T19:29:28.631Z"
-        },
-        {
-            "word": "fireman",
-            "added": "2022-05-05T19:30:03.711Z"
-        }
-    ],
-    "totalDocs": 20,
-    "page": 2,
-    "totalPages": 5,
-    "hasNext": true,
-    "hasPrev": true
-}
+---
+
+## 🧩 Extras Técnicos
+
+- **Middleware de Autenticação**: Criado middleware personalizado para validar token JWT em rotas protegidas.
+- **Middleware CacheInfo**: Criado middleware personalizado para retornar headers que sinalizam o tempo de execução da requisição e se a informação é retornada estava armazenada em cache.
+- **Service Layer**: Toda a lógica de negócio alocada nos services para manter os controllers enxutos.
+- **Comando Artisan Personalizado**: Para importar as palavras para banco de dados através de um arquivo .json (`php artisan app:import-words`).
+- **Histórico de busca**: Ao buscar uma palavra, o sistema dispara um evento que aciona um listener responsável por salvar a busca no histórico do usuário. Esse padrão desacopla a responsabilidade da camada de controller, mantendo a arquitetura limpa e escalável.
+
+---
+
+## 🚀 Instalação e Setup
+
+- Faça o clone do repositório.
+- Certifique-se de que o Docker e o Docker Compose estão instalados.
+- Faça um cópia do arquivo (`.env.example`):
+  ```bash
+  cp .env.example .env
+  ```
+- Edite o arquivo (`.env`) para configurar as variáveis do seu ambiente.
+  ```bash
+  DB_CONNECTION=mysql
+  DB_HOST=adicione o seu host do banco de dados aqui
+  DB_PORT=3306
+  DB_DATABASE=adicione o nome do seu banco de dados aqui
+  DB_USERNAME=adicione o seu nome de usuário do banco de dados aqui
+  DB_PASSWORD=adicione a sua senha do banco de dados aqui
+  REDIS_CLIENT=phpredis
+  REDIS_HOST=adicione o seu host do Redis aqui
+  REDIS_PASSWORD=adicione a sua senha do Redis aqui
+  REDIS_PORT=6379
+  JWT_SECRET=adicione o seu JWT_SECRET aqui (base64)
+  ```
+- Faça o build do projeto:
+  ```bash
+  docker-compose build
+  ```
+- Execute o projeto:
+  ```bash
+  docker-compose up -d
+  ```
+- Execute as migrations para criar as tabelas:
+  ````bash
+  docker-compose exec app php artisan migrate
+  ````
+- Faça a importação das palavras:
+  ```bash
+  docker-compose exec app php artisan app:import-words
+  ```
+
+---
+
+## 🗋 Documentação da API (Swagger)
+
+> Documentação interativa criada com pacote [L5 Swagger](https://github.com/DarkaOnLine/L5-Swagger)
+
+Acessível via:
+
 ```
-</details> 
-<details open>
-<summary>[GET] /user/me/favorites</summary>
-<p>
-Retornar a lista de palavras marcadas como favoritas
-</p>
-
-```json
-{
-    "results": [
-        {
-            "word": "fire",
-            "added": "2022-05-05T19:30:23.928Z"
-        },
-        {
-            "word": "firefly",
-            "added": "2022-05-05T19:30:24.088Z"
-        },
-        {
-            "word": "fireplace",
-            "added": "2022-05-05T19:30:28.963Z"
-        },
-        {
-            "word": "fireman",
-            "added": "2022-05-05T19:30:33.121Z"
-        }
-    ],
-    "totalDocs": 20,
-    "page": 2,
-    "totalPages": 5,
-    "hasNext": true,
-    "hasPrev": true
-}
-```
-
-</details>
-
-Além disso, os endpoints devem utilizar os seguintes códigos de status:
-- 200: sucesso com body ou sem body
-- 204: sucesso sem body
-- 400: mensagem de erro em formato humanizado, ou seja, sem informações internas e códigos de erro:
-
-```json
-{
-    "message": "Error message"
-}
+http://localhost:8000/api/documentation
 ```
 
-**Obrigatório 3** - Você deve criar um script para baixar a lista de palavras do repositório e importar estas palavras para o banco de dados. A API não possui endpoint com a lista de palavras. Para criar seu endpoint será necessário alimentar o seu banco de dados com o [arquivo existente dentro do projeto no Github](https://github.com/dwyl/english-words/blob/master/words_dictionary.json).
+---
 
-**Obrigatório 4** - Salvar em cache o resultado das requisições a API, para agilizar a resposta em caso de buscas com parâmetros repetidos. Sugestões são usar o Redis e/ou MongoDB;
+## 📬 Coleção Postman
 
-O cache pode ser feito a guardar todo o corpo das respostas ou para guardar o resultado das queries do banco. Para identificar a presença de cache, será necessário adicionar os seguintes headers nas respostas:
-- x-cache: valores HIT (retornou dados em cache) ou MISS (precisou buscar no banco)
-- x-response-time: duração da requisição em milissegundos
+Para facilitar os testes da API, baixe a coleção e importe no [Postman](https://www.postman.com/):
 
-**Diferencial 1** - Descrever a documentação da API utilizando o conceito de Open API 3.0;
+🧾 [Download da coleção](docs/collection.json)
 
-**Diferencial 2** - Escrever Unit Tests para os endpoints da API;
+---
 
-**Diferencial 3** - Configurar Docker no Projeto para facilitar o Deploy da equipe de DevOps;
+## 🔮 Melhorias Futuras
 
-**Diferencial 4** - Deploy em algum servidor, com ou sem automatização do CI.
+- Implementar paginação com cursores.
+- Adicionar testes automatizados (PHPUnit).
+- Internacionalização para suporte a múltiplos idiomas.
+- Fila para eventos assíncronos (como histórico de busca).
 
-**Diferencial 5** - Implementar paginação com cursores ao inves de usar page e limit . Ao realizar este diferencial, o retorno dos endpoints deve possuir a seguinte estrutura:
+---
 
-```json
-{
-    "results": [
-        "fire",
-        "firefly",
-        "fireplace",
-        "fireman"
-    ],
-    "totalDocs": 20,
-    "previous": "eyIkb2lkIjoiNTgwZmQxNmjJkOGI5In0",
-    "next": "eyIkb2lkIjoiNTgwZmQxNm1NjJkOGI4In0",
-    "hasNext": true,
-    "hasPrev": true,
-}
-```
-
-## Readme do Repositório
-
-- Deve conter o título do projeto
-- Uma descrição sobre o projeto em frase
-- Deve conter uma lista com linguagem, framework e/ou tecnologias usadas
-- Como instalar e usar o projeto (instruções)
-- Não esqueça o [.gitignore](https://www.toptal.com/developers/gitignore)
-- Se está usando github pessoal, referencie que é um challenge by coodesh:  
-
->  This is a challenge by [Coodesh](https://coodesh.com/)
-
-## Finalização e Instruções para a Apresentação
-
-1. Adicione o link do repositório com a sua solução no teste
-2. Verifique se o Readme está bom e faça o commit final em seu repositório;
-3. Envie e aguarde as instruções para seguir. Caso o teste tenha apresentação de vídeo, dentro da tela de entrega será possível gravar após adicionar o link do repositório. Sucesso e boa sorte. =)
-
-
-## Suporte
-
-Para tirar dúvidas sobre o processo envie uma mensagem diretamente a um especialista no chat da plataforma. 
+> This is a challenge by [Coodesh](https://coodesh.com/)
